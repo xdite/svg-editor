@@ -22,6 +22,14 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   };
 
+  const getTransform = (element: Element) => {
+    if (element.transform) return element.transform;
+    if (element.x !== undefined || element.y !== undefined) {
+      return `translate(${element.x || 0} ${element.y || 0})`;
+    }
+    return undefined;
+  };
+
   return (
     <div 
       className="flex-1 bg-gray-50 p-4 overflow-auto"
@@ -34,6 +42,8 @@ const Canvas: React.FC<CanvasProps> = ({
         className="bg-white shadow-inner"
       >
         {elements.map((element) => {
+          const transform = getTransform(element);
+          
           switch (element.type) {
             case 'text':
               return (
@@ -42,12 +52,12 @@ const Canvas: React.FC<CanvasProps> = ({
                   onClick={() => onSelectElement(element)}
                   style={{ cursor: 'pointer' }}
                   className={selectedElement?.id === element.id ? 'outline outline-2 outline-blue-500' : ''}
-                  x={element.x}
-                  y={element.y}
                   fill={element.fill}
                   fontSize={element.fontSize}
                   opacity={element.opacity}
-                  transform={element.transform}
+                  transform={transform}
+                  x={!transform ? element.x : undefined}
+                  y={!transform ? element.y : undefined}
                 >
                   {element.text}
                 </text>
@@ -59,13 +69,13 @@ const Canvas: React.FC<CanvasProps> = ({
                   onClick={() => onSelectElement(element)}
                   style={{ cursor: 'pointer' }}
                   className={selectedElement?.id === element.id ? 'outline outline-2 outline-blue-500' : ''}
-                  x={element.x}
-                  y={element.y}
                   width={element.width}
                   height={element.height}
                   fill={element.fill}
                   opacity={element.opacity}
-                  transform={element.transform}
+                  transform={transform}
+                  x={!transform ? element.x : undefined}
+                  y={!transform ? element.y : undefined}
                 />
               );
             case 'path':

@@ -10,13 +10,22 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
   const parseTransform = (transform: string | null): { x: number, y: number } => {
     if (!transform) return { x: 0, y: 0 };
     
-    const translateMatch = transform.match(/translate\(([-\d.]+)(?:px)?\s*([-\d.]+)?(?:px)?\)/);
+    const matrixMatch = transform.match(/matrix\(([\d.-]+),\s*([\d.-]+),\s*([\d.-]+),\s*([\d.-]+),\s*([\d.-]+),\s*([\d.-]+)\)/);
+    if (matrixMatch) {
+      return {
+        x: parseFloat(matrixMatch[5]),
+        y: parseFloat(matrixMatch[6])
+      };
+    }
+    
+    const translateMatch = transform.match(/translate\(([-\d.]+)(?:,\s*)?([-\d.]+)?\)/);
     if (translateMatch) {
       return {
         x: parseFloat(translateMatch[1]),
         y: parseFloat(translateMatch[2] || '0')
       };
     }
+
     return { x: 0, y: 0 };
   };
 
@@ -27,16 +36,19 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
     switch (element.tagName.toLowerCase()) {
       case 'text':
         const textElement = element as SVGTextElement;
+        const x = textElement.getAttribute('x');
+        const y = textElement.getAttribute('y');
+        
         elements.push({
           id: generateId(),
           type: 'text',
           text: textElement.textContent || '',
-          x: parseFloat(textElement.getAttribute('x') || position.x.toString()),
-          y: parseFloat(textElement.getAttribute('y') || position.y.toString()),
+          x: (x ? parseFloat(x) : 0) + position.x,
+          y: (y ? parseFloat(y) : 0) + position.y,
           fill: textElement.getAttribute('fill') || '#000000',
           fontSize: parseFloat(textElement.getAttribute('font-size') || '16'),
           opacity: textElement.getAttribute('opacity') || '1',
-          transform: transform || undefined,
+          transform: undefined,
         });
         break;
 
@@ -69,16 +81,30 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
 
       case 'g':
         Array.from(element.children).forEach(child => {
-          parseElement(child as Element);
+          parseGroup(child as Element, transform || '');
         });
         break;
+    }
+  };
+
+  const parseGroup = (element: Element, parentTransform: string = '') => {
+    const currentTransform = element.getAttribute('transform') || '';
+    const fullTransform = parentTransform + ' ' + currentTransform;
+
+    if (element.tagName.toLowerCase() === 'g') {
+      Array.from(element.children).forEach(child => {
+        parseGroup(child as Element, fullTransform.trim());
+      });
+    } else {
+      element.setAttribute('transform', fullTransform.trim());
+      parseElement(element);
     }
   };
 
   const svgElement = doc.querySelector('svg');
   if (svgElement) {
     Array.from(svgElement.children).forEach(child => {
-      parseElement(child as Element);
+      parseGroup(child as Element);
     });
   }
 

@@ -2,15 +2,25 @@ import { Element } from '../types';
 
 export const generateSVG = (elements: Element[]): string => {
   const generateElementString = (element: Element): string => {
+    const getTransform = (element: Element) => {
+      if (!element.transform) {
+        return element.x !== undefined && element.y !== undefined
+          ? `transform="translate(${element.x} ${element.y})"` 
+          : '';
+      }
+      
+      return `transform="${element.transform}"`;
+    };
+
     const commonProps = [
       element.fill ? `fill="${element.fill}"` : '',
       element.opacity ? `opacity="${element.opacity}"` : '',
-      element.transform ? `transform="${element.transform}"` : '',
+      getTransform(element),
     ].filter(Boolean).join(' ');
 
     switch (element.type) {
       case 'text':
-        return `<text ${commonProps} font-size="${element.fontSize || 16}">${element.text}</text>`;
+        return `<text font-size="${element.fontSize || 16}" ${commonProps}>${element.text}</text>`;
       
       case 'rect':
         return `<rect width="${element.width}" height="${element.height}" ${commonProps} />`;
