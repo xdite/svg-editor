@@ -108,31 +108,70 @@ function App() {
         />
         
         <Toolbar
-          tools={tools}
+          tools={tools.filter(tool => tool.id !== 'code')}
           selectedTool={selectedTool}
           onSelectTool={handleToolSelect}
         />
 
-        <div className="flex-1 bg-white rounded-lg shadow-lg min-h-[600px] flex">
-          {activeTab === 'visual' ? (
-            <Canvas
-              key="visual-canvas"
-              elements={elements}
-              selectedTool={selectedTool}
-              selectedElement={selectedElement}
-              onSelectElement={setSelectedElement}
-              onUpdateElement={handleUpdateElement}
-            />
-          ) : (
-            <div className="w-full p-4">
-              <textarea
-                value={svgCode}
-                onChange={(e) => handleCodeChange(e.target.value)}
-                className="w-full h-full min-h-[600px] font-mono text-sm p-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                spellCheck={false}
+        <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg min-h-[600px]">
+          <div className="flex border-b border-gray-200">
+            <button
+              className={`px-4 py-2 font-medium text-sm ${
+                activeTab === 'visual'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => {
+                if (activeTab === 'code') {
+                  try {
+                    parseSVG(svgCode).then(result => {
+                      setElements(result.elements);
+                      setActiveTab('visual');
+                    });
+                  } catch (error) {
+                    console.error('Invalid SVG code:', error);
+                  }
+                }
+              }}
+            >
+              Graph
+            </button>
+            <button
+              className={`px-4 py-2 font-medium text-sm ${
+                activeTab === 'code'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => {
+                setSvgCode(generateSVG(elements));
+                setActiveTab('code');
+              }}
+            >
+              Source Code
+            </button>
+          </div>
+
+          <div className="flex-1">
+            {activeTab === 'visual' ? (
+              <Canvas
+                key="visual-canvas"
+                elements={elements}
+                selectedTool={selectedTool}
+                selectedElement={selectedElement}
+                onSelectElement={setSelectedElement}
+                onUpdateElement={handleUpdateElement}
               />
-            </div>
-          )}
+            ) : (
+              <div className="w-full h-full p-4">
+                <textarea
+                  value={svgCode}
+                  onChange={(e) => handleCodeChange(e.target.value)}
+                  className="w-full h-full font-mono text-sm p-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  spellCheck={false}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         <PropertyPanel
