@@ -10,11 +10,11 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
   const parseTransform = (transform: string | null): { x: number, y: number } => {
     if (!transform) return { x: 0, y: 0 };
     
-    const translateMatch = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
+    const translateMatch = transform.match(/translate\(([-\d.]+)(?:px)?\s*([-\d.]+)?(?:px)?\)/);
     if (translateMatch) {
       return {
         x: parseFloat(translateMatch[1]),
-        y: parseFloat(translateMatch[2])
+        y: parseFloat(translateMatch[2] || '0')
       };
     }
     return { x: 0, y: 0 };
@@ -31,8 +31,8 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
           id: generateId(),
           type: 'text',
           text: textElement.textContent || '',
-          x: position.x,
-          y: position.y,
+          x: parseFloat(textElement.getAttribute('x') || position.x.toString()),
+          y: parseFloat(textElement.getAttribute('y') || position.y.toString()),
           fill: textElement.getAttribute('fill') || '#000000',
           fontSize: parseFloat(textElement.getAttribute('font-size') || '16'),
           opacity: textElement.getAttribute('opacity') || '1',
@@ -44,8 +44,8 @@ export const parseSVG = async (svgContent: string): Promise<SVGImportResult> => 
         elements.push({
           id: generateId(),
           type: 'rect',
-          x: position.x,
-          y: position.y,
+          x: parseFloat(element.getAttribute('x') || position.x.toString()),
+          y: parseFloat(element.getAttribute('y') || position.y.toString()),
           width: parseFloat(element.getAttribute('width') || '0'),
           height: parseFloat(element.getAttribute('height') || '0'),
           fill: element.getAttribute('fill') || '#000000',
