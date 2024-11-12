@@ -26,7 +26,7 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
   const moveElement = (direction: 'up' | 'down' | 'left' | 'right') => {
     const currentX = element.x || 0;
     const currentY = element.y || 0;
-    const step = 10;
+    const step = 1;
 
     let newX = currentX;
     let newY = currentY;
