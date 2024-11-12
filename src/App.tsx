@@ -54,6 +54,7 @@ function App() {
   };
 
   const handleUpdateElement = (updatedElement: Element) => {
+    console.log('Updating element:', updatedElement);
     setElements(elements.map(el => 
       el.id === updatedElement.id ? updatedElement : el
     ));

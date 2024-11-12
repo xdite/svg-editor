@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import { Element } from '../../types';
 
@@ -20,6 +20,37 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
     onUpdateElement({
       ...element,
       [property]: value,
+    });
+  };
+
+  const moveElement = (direction: 'up' | 'down' | 'left' | 'right') => {
+    const currentX = element.x || 0;
+    const currentY = element.y || 0;
+    const step = 10;
+
+    let newX = currentX;
+    let newY = currentY;
+
+    switch (direction) {
+      case 'up':
+        newY -= step;
+        break;
+      case 'down':
+        newY += step;
+        break;
+      case 'left':
+        newX -= step;
+        break;
+      case 'right':
+        newX += step;
+        break;
+    }
+
+    onUpdateElement({
+      ...element,
+      x: newX,
+      y: newY,
+      transform: `translate(${newX} ${newY})`,
     });
   };
 
@@ -48,6 +79,52 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
+
+            {element.type === 'path' && (
+              <div className="space-y-2">
+                <span className="text-xs text-gray-500">Position</span>
+                <div className="grid grid-cols-3 gap-1 w-32 mx-auto">
+                  <div className="col-start-2">
+                    <button
+                      onClick={() => moveElement('up')}
+                      className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
+                      type="button"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="col-start-1 col-end-4 flex justify-between">
+                    <button
+                      onClick={() => moveElement('left')}
+                      className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
+                      type="button"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => moveElement('right')}
+                      className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
+                      type="button"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="col-start-2">
+                    <button
+                      onClick={() => moveElement('down')}
+                      className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
+                      type="button"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-2 text-xs text-gray-500">
+                  <span>X: {element.x || 0}px</span>
+                  <span>Y: {element.y || 0}px</span>
+                </div>
+              </div>
+            )}
 
             {element.type === 'text' && (
               <>

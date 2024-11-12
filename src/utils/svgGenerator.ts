@@ -10,10 +10,10 @@ export const generateSVG = (elements: Element[]): string => {
 
     switch (element.type) {
       case 'text':
-        return `<text x="${element.x}" y="${element.y}" ${commonProps} font-size="${element.fontSize || 16}">${element.text}</text>`;
+        return `<text ${commonProps} font-size="${element.fontSize || 16}">${element.text}</text>`;
       
       case 'rect':
-        return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" ${commonProps} />`;
+        return `<rect width="${element.width}" height="${element.height}" ${commonProps} />`;
       
       case 'path':
         return `<path d="${element.d}" ${commonProps} />`;
