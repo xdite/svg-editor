@@ -104,18 +104,19 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
             <div className="grid grid-cols-3 gap-2">
               {pathElements.map((element) => (
                 <div key={element.id} className="space-y-2">
-                  <PathPreview
+                  <ElementProperties
                     element={element}
-                    isSelected={selectedElement?.id === element.id}
-                    onClick={() => onSelectElement(element)}
-                  />
-                  {selectedElement?.id === element.id && (
-                    <ElementProperties
-                      element={element}
-                      onUpdateElement={onUpdateElement}
-                      onDeleteElement={onDeleteElement}
-                    />
-                  )}
+                    onUpdateElement={onUpdateElement}
+                    onDeleteElement={onDeleteElement}
+                  >
+                    <div onClick={() => onSelectElement(element)}>
+                      <PathPreview
+                        element={element}
+                        isSelected={selectedElement?.id === element.id}
+                        onClick={() => {}}
+                      />
+                    </div>
+                  </ElementProperties>
                 </div>
               ))}
             </div>
@@ -143,32 +144,31 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
               <div className="ml-6 space-y-2 mt-2">
                 {group.elements.map((element) => (
                   <div key={element.id} className="space-y-1">
-                    <button
-                      className={`w-full text-left px-3 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50 ${
-                        selectedElement?.id === element.id ? 'bg-blue-50 text-blue-600' : 'text-gray-600'
-                      }`}
-                      onClick={() => onSelectElement(element)}
+                    <ElementProperties
+                      element={element}
+                      onUpdateElement={onUpdateElement}
+                      onDeleteElement={onDeleteElement}
                     >
-                      <div 
-                        className="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
-                        style={{ 
-                          backgroundColor: element.fill || '#000000',
-                          opacity: element.opacity || 1
-                        }}
-                      />
-                      <span className="flex-1 text-sm truncate">
-                        {getElementPreview(element)}
-                      </span>
-                    </button>
-                    {selectedElement?.id === element.id && (
-                      <div className="ml-4">
-                        <ElementProperties
-                          element={element}
-                          onUpdateElement={onUpdateElement}
-                          onDeleteElement={onDeleteElement}
-                        />
+                      <div onClick={() => onSelectElement(element)}>
+                        <button
+                          type="button"
+                          className={`w-full text-left px-3 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50 ${
+                            selectedElement?.id === element.id ? 'bg-blue-50 text-blue-600' : 'text-gray-600'
+                          }`}
+                        >
+                          <div 
+                            className="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
+                            style={{ 
+                              backgroundColor: element.fill || '#000000',
+                              opacity: element.opacity || 1
+                            }}
+                          />
+                          <span className="flex-1 text-sm truncate">
+                            {getElementPreview(element)}
+                          </span>
+                        </button>
                       </div>
-                    )}
+                    </ElementProperties>
                   </div>
                 ))}
               </div>
