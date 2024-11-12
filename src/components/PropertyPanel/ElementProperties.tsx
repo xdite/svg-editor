@@ -50,30 +50,50 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
             </div>
 
             {element.type === 'text' && (
-              <div>
+              <>
+                <div>
+                  <input
+                    type="text"
+                    value={element.text || ''}
+                    onChange={(e) => handleChange('text', e.target.value)}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex gap-2 items-center">
+                  <span className="text-xs text-gray-500">Color</span>
+                  <input
+                    type="color"
+                    value={element.fill || '#000000'}
+                    onChange={(e) => handleChange('fill', e.target.value)}
+                    className="w-6 h-6 p-0 border border-gray-300 rounded-md"
+                  />
+                  <input
+                    type="text"
+                    value={element.fill || '#000000'}
+                    onChange={(e) => handleChange('fill', e.target.value)}
+                    className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </>
+            )}
+
+            {element.type !== 'text' && (
+              <div className="flex gap-2 items-center">
+                <span className="text-xs text-gray-500">Fill</span>
+                <input
+                  type="color"
+                  value={element.fill || '#000000'}
+                  onChange={(e) => handleChange('fill', e.target.value)}
+                  className="w-6 h-6 p-0 border border-gray-300 rounded-md"
+                />
                 <input
                   type="text"
-                  value={element.text || ''}
-                  onChange={(e) => handleChange('text', e.target.value)}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  value={element.fill || '#000000'}
+                  onChange={(e) => handleChange('fill', e.target.value)}
+                  className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             )}
-
-            <div className="flex gap-2 items-center">
-              <input
-                type="color"
-                value={element.fill || '#000000'}
-                onChange={(e) => handleChange('fill', e.target.value)}
-                className="w-6 h-6 p-0 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                value={element.fill || '#000000'}
-                onChange={(e) => handleChange('fill', e.target.value)}
-                className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
 
             {element.type === 'text' && (
               <div className="flex gap-2 items-center">

@@ -47,7 +47,11 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
   const getElementPreview = (element: Element) => {
     switch (element.type) {
       case 'text':
-        return element.text?.substring(0, 20) + (element.text && element.text.length > 20 ? '...' : '');
+        return (
+          <span style={{ color: element.fill || '#000000' }}>
+            {element.text?.substring(0, 20) + (element.text && element.text.length > 20 ? '...' : '')}
+          </span>
+        );
       case 'rect':
         return `Rectangle (${element.width}×${element.height})`;
       default:
@@ -163,7 +167,11 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               opacity: element.opacity || 1
                             }}
                           />
-                          <span className="flex-1 text-sm truncate">
+                          <span className="flex-1 text-sm truncate" style={
+                            element.type === 'text' 
+                              ? { color: element.fill || '#000000', opacity: element.opacity || 1 } 
+                              : undefined
+                          }>
                             {getElementPreview(element)}
                           </span>
                         </button>
