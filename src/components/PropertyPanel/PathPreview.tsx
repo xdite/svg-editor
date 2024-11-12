@@ -14,12 +14,26 @@ const PathPreview: React.FC<PathPreviewProps> = ({ element, isSelected, onClick 
   useEffect(() => {
     if (pathRef.current) {
       const bbox = pathRef.current.getBBox();
-      // 添加一些 padding
       const padding = 10;
-      const x = bbox.x - padding;
-      const y = bbox.y - padding;
-      const width = bbox.width + (padding * 2);
-      const height = bbox.height + (padding * 2);
+      
+      // 計算寬高比
+      const aspectRatio = bbox.width / bbox.height;
+      
+      // 根據寬高比決定如何調整 viewBox
+      let width, height;
+      if (aspectRatio > 1) {
+        // 如果更寬，以寬度為基準
+        width = bbox.width + (padding * 2);
+        height = width / aspectRatio;
+      } else {
+        // 如果更高，以高度為基準
+        height = bbox.height + (padding * 2);
+        width = height * aspectRatio;
+      }
+      
+      const x = bbox.x - ((width - bbox.width) / 2);
+      const y = bbox.y - ((height - bbox.height) / 2);
+      
       setViewBox(`${x} ${y} ${width} ${height}`);
     }
   }, [element.d]);
@@ -35,7 +49,7 @@ const PathPreview: React.FC<PathPreviewProps> = ({ element, isSelected, onClick 
         width="100%"
         height="100%"
         viewBox={viewBox}
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid meet"  // 改回 meet 以保持比例
         className="absolute inset-0"
       >
         <path
