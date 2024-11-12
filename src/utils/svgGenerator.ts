@@ -8,25 +8,47 @@ export const generateSVG = (elements: Element[]): string => {
           ? `transform="translate(${element.x} ${element.y})"` 
           : '';
       }
-      
       return `transform="${element.transform}"`;
     };
 
     const commonProps = [
       element.fill ? `fill="${element.fill}"` : '',
       element.opacity ? `opacity="${element.opacity}"` : '',
-      getTransform(element),
-    ].filter(Boolean).join(' ');
+    ].filter(Boolean);
 
     switch (element.type) {
-      case 'text':
-        return `<text font-size="${element.fontSize || 16}" ${commonProps}>${element.text}</text>`;
+      case 'text': {
+        const textProps = [
+          ...commonProps,
+          element.fontSize ? `font-size="${element.fontSize}pt"` : '',
+          element.x !== undefined ? `x="${element.x}"` : '',
+          element.y !== undefined ? `y="${element.y}"` : '',
+          getTransform(element),
+        ].filter(Boolean).join(' ');
+
+        return `<text ${textProps}>${element.text}</text>`;
+      }
       
-      case 'rect':
-        return `<rect width="${element.width}" height="${element.height}" ${commonProps} />`;
+      case 'rect': {
+        const rectProps = [
+          ...commonProps,
+          element.width ? `width="${element.width}"` : '',
+          element.height ? `height="${element.height}"` : '',
+          getTransform(element),
+        ].filter(Boolean).join(' ');
+
+        return `<rect ${rectProps} />`;
+      }
       
-      case 'path':
-        return `<path d="${element.d}" ${commonProps} />`;
+      case 'path': {
+        const pathProps = [
+          ...commonProps,
+          `d="${element.d}"`,
+          getTransform(element),
+        ].filter(Boolean).join(' ');
+
+        return `<path ${pathProps} />`;
+      }
       
       default:
         return '';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MousePointer, Upload, Move, Download } from 'lucide-react';
+import { MousePointer, Upload, Move, Download, Code } from 'lucide-react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
 import PropertyPanel from './components/PropertyPanel';
@@ -11,11 +11,14 @@ function App() {
   const [elements, setElements] = useState<Element[]>([]);
   const [selectedTool, setSelectedTool] = useState<string>('select');
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
+  const [activeTab, setActiveTab] = useState<'visual' | 'code'>('visual');
+  const [svgCode, setSvgCode] = useState<string>('');
 
   const tools = [
     { id: 'select', icon: MousePointer, label: 'Select' },
     { id: 'upload', icon: Upload, label: 'Upload SVG' },
     { id: 'download', icon: Download, label: 'Download SVG' },
+    { id: 'code', icon: Code, label: 'Code View' },
   ];
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +40,20 @@ function App() {
       document.getElementById('svg-upload')?.click();
     } else if (toolId === 'download') {
       handleDownload();
+    } else if (toolId === 'code') {
+      if (activeTab === 'visual') {
+        setSvgCode(generateSVG(elements));
+        setActiveTab('code');
+      } else {
+        try {
+          parseSVG(svgCode).then(result => {
+            setElements(result.elements);
+            setActiveTab('visual');
+          });
+        } catch (error) {
+          console.error('Invalid SVG code:', error);
+        }
+      }
     }
   };
 
@@ -68,6 +85,10 @@ function App() {
     }
   };
 
+  const handleCodeChange = (newCode: string) => {
+    setSvgCode(newCode);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
@@ -93,13 +114,25 @@ function App() {
         />
 
         <div className="flex-1 bg-white rounded-lg shadow-lg min-h-[600px] flex">
-          <Canvas
-            elements={elements}
-            selectedTool={selectedTool}
-            selectedElement={selectedElement}
-            onSelectElement={setSelectedElement}
-            onUpdateElement={handleUpdateElement}
-          />
+          {activeTab === 'visual' ? (
+            <Canvas
+              key="visual-canvas"
+              elements={elements}
+              selectedTool={selectedTool}
+              selectedElement={selectedElement}
+              onSelectElement={setSelectedElement}
+              onUpdateElement={handleUpdateElement}
+            />
+          ) : (
+            <div className="w-full p-4">
+              <textarea
+                value={svgCode}
+                onChange={(e) => handleCodeChange(e.target.value)}
+                className="w-full h-full min-h-[600px] font-mono text-sm p-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                spellCheck={false}
+              />
+            </div>
+          )}
         </div>
 
         <PropertyPanel
