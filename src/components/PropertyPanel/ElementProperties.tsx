@@ -23,6 +23,19 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
     });
   };
 
+  const parseOriginalTransform = (transform: string | undefined) => {
+    if (!transform) return '';
+    
+    // 只保留 scale 和 rotate 等變換，移除所有 translate
+    const transforms = transform.split(/\)\s*/).filter(t => t.trim());
+    const nonTranslateTransforms = transforms
+      .filter(t => !t.startsWith('translate'))
+      .map(t => t.endsWith(')') ? t : t + ')')
+      .join(' ');
+      
+    return nonTranslateTransforms;
+  };
+
   const moveElement = (direction: 'up' | 'down' | 'left' | 'right') => {
     const currentX = element.x || 0;
     const currentY = element.y || 0;
@@ -46,11 +59,14 @@ const ElementProperties: React.FC<ElementPropertiesProps> = ({
         break;
     }
 
+    const originalTransform = parseOriginalTransform(element.transform);
+    const newTransform = `translate(${newX} ${newY})${originalTransform ? ' ' + originalTransform : ''}`;
+
     onUpdateElement({
       ...element,
       x: newX,
       y: newY,
-      transform: `translate(${newX} ${newY})`,
+      transform: newTransform,
     });
   };
 

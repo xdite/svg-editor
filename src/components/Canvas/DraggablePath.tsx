@@ -17,13 +17,25 @@ const DraggablePath: React.FC<DraggablePathProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  const parseOriginalTransform = (transform: string | undefined) => {
+    if (!transform) return '';
+    
+    const transforms = transform.split(/\)\s*/).filter(t => t.trim());
+    const nonTranslateTransforms = transforms
+      .filter(t => !t.startsWith('translate'))
+      .map(t => t.endsWith(')') ? t : t + ')')
+      .join(' ');
+      
+    return nonTranslateTransforms;
+  };
+
   useEffect(() => {
     if (element.x === undefined || element.y === undefined) {
       onUpdate({
         ...element,
         x: 0,
         y: 0,
-        transform: 'translate(0 0)',
+        transform: `translate(0 0) ${parseOriginalTransform(element.transform)}`,
       });
     }
   }, [element.id]);
@@ -34,12 +46,14 @@ const DraggablePath: React.FC<DraggablePathProps> = ({
     const handleMouseMove = (e: MouseEvent) => {
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
+      const originalTransform = parseOriginalTransform(element.transform);
+      const newTransform = `translate(${newX} ${newY})${originalTransform ? ' ' + originalTransform : ''}`;
 
       onUpdate({
         ...element,
         x: newX,
         y: newY,
-        transform: `translate(${newX} ${newY})`,
+        transform: newTransform,
       });
     };
 
