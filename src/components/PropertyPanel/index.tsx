@@ -129,25 +129,50 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
         {Object.entries(groupedElements).map(([groupName, group]) => (
           <div key={groupName} className="mb-4 last:mb-0">
-            <button
-              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
-              onClick={() => toggleGroup(groupName)}
-            >
-              {expandedGroups[groupName] ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-              <span className="flex items-center gap-2">
-                {group.icon}
-                {groupName} ({group.elements.length})
-              </span>
-            </button>
+            <div className="font-medium text-sm text-gray-700 mb-2 flex items-center gap-2">
+              {group.icon}
+              {groupName} ({group.elements.length})
+            </div>
             
-            {expandedGroups[groupName] && (
-              <div className="ml-6 space-y-2 mt-2">
+            {groupName === 'Text Elements' ? (
+              <div className="grid grid-cols-2 gap-2">
                 {group.elements.map((element) => (
-                  <div key={element.id} className="space-y-1">
+                  <div key={element.id}>
+                    <ElementProperties
+                      element={element}
+                      onUpdateElement={onUpdateElement}
+                      onDeleteElement={onDeleteElement}
+                    >
+                      <div onClick={() => onSelectElement(element)}>
+                        <button
+                          type="button"
+                          className={`w-full px-3 py-2 rounded-md border transition-all
+                            ${selectedElement?.id === element.id 
+                              ? 'border-blue-500 shadow-sm' 
+                              : 'border-gray-200 hover:border-gray-300'
+                            }
+                          `}
+                        >
+                          <span 
+                            className="block truncate text-center"
+                            style={{ 
+                              color: element.fill || '#000000',
+                              opacity: element.opacity || 1,
+                              fontSize: `${element.fontSize || 16}px`
+                            }}
+                          >
+                            {element.text || 'Text'}
+                          </span>
+                        </button>
+                      </div>
+                    </ElementProperties>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {group.elements.map((element) => (
+                  <div key={element.id}>
                     <ElementProperties
                       element={element}
                       onUpdateElement={onUpdateElement}
@@ -167,11 +192,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
                               opacity: element.opacity || 1
                             }}
                           />
-                          <span className="flex-1 text-sm truncate" style={
-                            element.type === 'text' 
-                              ? { color: element.fill || '#000000', opacity: element.opacity || 1 } 
-                              : undefined
-                          }>
+                          <span className="flex-1 text-sm truncate">
                             {getElementPreview(element)}
                           </span>
                         </button>
