@@ -1,16 +1,16 @@
 export interface Element {
   id: string;
   type: 'text' | 'rect' | 'path';
-  fill?: string;
-  opacity?: string;
-  text?: string;
-  fontSize?: number;
-  width?: number;
-  height?: number;
   x?: number;
   y?: number;
   d?: string;
+  text?: string;
+  fill?: string;
+  opacity?: string;
+  fontSize?: number;
   transform?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface SVGImportResult {

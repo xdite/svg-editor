@@ -47,7 +47,11 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
   const getElementPreview = (element: Element) => {
     switch (element.type) {
       case 'text':
-        return element.text?.substring(0, 20) + (element.text && element.text.length > 20 ? '...' : '');
+        return (
+          <span style={{ color: element.fill || '#000000' }}>
+            {element.text?.substring(0, 20) + (element.text && element.text.length > 20 ? '...' : '')}
+          </span>
+        );
       case 'rect':
         return `Rectangle (${element.width}×${element.height})`;
       default:
@@ -104,18 +108,19 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
             <div className="grid grid-cols-3 gap-2">
               {pathElements.map((element) => (
                 <div key={element.id} className="space-y-2">
-                  <PathPreview
+                  <ElementProperties
                     element={element}
-                    isSelected={selectedElement?.id === element.id}
-                    onClick={() => onSelectElement(element)}
-                  />
-                  {selectedElement?.id === element.id && (
-                    <ElementProperties
-                      element={element}
-                      onUpdateElement={onUpdateElement}
-                      onDeleteElement={onDeleteElement}
-                    />
-                  )}
+                    onUpdateElement={onUpdateElement}
+                    onDeleteElement={onDeleteElement}
+                  >
+                    <div onClick={() => onSelectElement(element)}>
+                      <PathPreview
+                        element={element}
+                        isSelected={selectedElement?.id === element.id}
+                        onClick={() => {}}
+                      />
+                    </div>
+                  </ElementProperties>
                 </div>
               ))}
             </div>
@@ -124,51 +129,75 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
 
         {Object.entries(groupedElements).map(([groupName, group]) => (
           <div key={groupName} className="mb-4 last:mb-0">
-            <button
-              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
-              onClick={() => toggleGroup(groupName)}
-            >
-              {expandedGroups[groupName] ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-              <span className="flex items-center gap-2">
-                {group.icon}
-                {groupName} ({group.elements.length})
-              </span>
-            </button>
+            <div className="font-medium text-sm text-gray-700 mb-2 flex items-center gap-2">
+              {group.icon}
+              {groupName} ({group.elements.length})
+            </div>
             
-            {expandedGroups[groupName] && (
-              <div className="ml-6 space-y-2 mt-2">
+            {groupName === 'Text Elements' ? (
+              <div className="grid grid-cols-2 gap-2">
                 {group.elements.map((element) => (
-                  <div key={element.id} className="space-y-1">
-                    <button
-                      className={`w-full text-left px-3 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50 ${
-                        selectedElement?.id === element.id ? 'bg-blue-50 text-blue-600' : 'text-gray-600'
-                      }`}
-                      onClick={() => onSelectElement(element)}
+                  <div key={element.id}>
+                    <ElementProperties
+                      element={element}
+                      onUpdateElement={onUpdateElement}
+                      onDeleteElement={onDeleteElement}
                     >
-                      <div 
-                        className="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
-                        style={{ 
-                          backgroundColor: element.fill || '#000000',
-                          opacity: element.opacity || 1
-                        }}
-                      />
-                      <span className="flex-1 text-sm truncate">
-                        {getElementPreview(element)}
-                      </span>
-                    </button>
-                    {selectedElement?.id === element.id && (
-                      <div className="ml-4">
-                        <ElementProperties
-                          element={element}
-                          onUpdateElement={onUpdateElement}
-                          onDeleteElement={onDeleteElement}
-                        />
+                      <div onClick={() => onSelectElement(element)}>
+                        <button
+                          type="button"
+                          className={`w-full px-3 py-2 rounded-md border transition-all
+                            ${selectedElement?.id === element.id 
+                              ? 'border-blue-500 shadow-sm' 
+                              : 'border-gray-200 hover:border-gray-300'
+                            }
+                          `}
+                        >
+                          <span 
+                            className="block truncate text-center"
+                            style={{ 
+                              color: element.fill || '#000000',
+                              opacity: element.opacity || 1,
+                              fontSize: `${element.fontSize || 16}px`
+                            }}
+                          >
+                            {element.text || 'Text'}
+                          </span>
+                        </button>
                       </div>
-                    )}
+                    </ElementProperties>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {group.elements.map((element) => (
+                  <div key={element.id}>
+                    <ElementProperties
+                      element={element}
+                      onUpdateElement={onUpdateElement}
+                      onDeleteElement={onDeleteElement}
+                    >
+                      <div onClick={() => onSelectElement(element)}>
+                        <button
+                          type="button"
+                          className={`w-full text-left px-3 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50 ${
+                            selectedElement?.id === element.id ? 'bg-blue-50 text-blue-600' : 'text-gray-600'
+                          }`}
+                        >
+                          <div 
+                            className="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
+                            style={{ 
+                              backgroundColor: element.fill || '#000000',
+                              opacity: element.opacity || 1
+                            }}
+                          />
+                          <span className="flex-1 text-sm truncate">
+                            {getElementPreview(element)}
+                          </span>
+                        </button>
+                      </div>
+                    </ElementProperties>
                   </div>
                 ))}
               </div>
