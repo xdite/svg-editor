@@ -1,6 +1,6 @@
 # SVG Editor
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/338b8b/deploy-status)](https://app.netlify.com/sites/storied-donut-338b8b/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/28e753c1-32c9-40c9-8773-5823f0a44168/deploy-status)](https://app.netlify.com/sites/storied-donut-338b8b/deploys)
 
 A web-based SVG editor that allows you to edit and manipulate SVG files with ease. Perfect for making quick adjustments to SVG files without the need for complex design software.
 
@@ -27,7 +27,7 @@ A web-based SVG editor that allows you to edit and manipulate SVG files with eas
 ## Usage
 
 1. **Upload SVG**: Click the upload button to import your SVG file
-2. **Edit Visually**: 
+2. **Edit Visually**:
    - Select elements to modify their properties
    - Drag elements to reposition them
    - Use the properties panel to adjust colors and other attributes
