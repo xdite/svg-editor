@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Element } from '../../types';
 
 interface PathPreviewProps {
@@ -8,6 +8,22 @@ interface PathPreviewProps {
 }
 
 const PathPreview: React.FC<PathPreviewProps> = ({ element, isSelected, onClick }) => {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [viewBox, setViewBox] = useState("0 0 960 540");
+
+  useEffect(() => {
+    if (pathRef.current) {
+      const bbox = pathRef.current.getBBox();
+      // 添加一些 padding
+      const padding = 10;
+      const x = bbox.x - padding;
+      const y = bbox.y - padding;
+      const width = bbox.width + (padding * 2);
+      const height = bbox.height + (padding * 2);
+      setViewBox(`${x} ${y} ${width} ${height}`);
+    }
+  }, [element.d]);
+
   return (
     <button
       onClick={onClick}
@@ -18,11 +34,12 @@ const PathPreview: React.FC<PathPreviewProps> = ({ element, isSelected, onClick 
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 960 540"
-        preserveAspectRatio="xMidYMid meet"
+        viewBox={viewBox}
+        preserveAspectRatio="none"
         className="absolute inset-0"
       >
         <path
+          ref={pathRef}
           d={element.d}
           fill={element.fill || '#000000'}
           opacity={element.opacity || 1}
