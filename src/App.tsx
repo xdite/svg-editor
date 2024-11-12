@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MousePointer, Upload, Move, Download, Code } from 'lucide-react';
+import { MousePointer, Upload, Move, Download, Code, Palette } from 'lucide-react';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
 import PropertyPanel from './components/PropertyPanel';
@@ -116,7 +116,7 @@ function App() {
         <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg min-h-[600px]">
           <div className="flex border-b border-gray-200">
             <button
-              className={`px-4 py-2 font-medium text-sm ${
+              className={`px-4 py-2 font-medium text-sm flex items-center gap-2 ${
                 activeTab === 'visual'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
@@ -133,11 +133,12 @@ function App() {
                   }
                 }
               }}
+              title="Visual Editor"
             >
-              Graph
+              <Palette className="w-4 h-4" />
             </button>
             <button
-              className={`px-4 py-2 font-medium text-sm ${
+              className={`px-4 py-2 font-medium text-sm flex items-center gap-2 ${
                 activeTab === 'code'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-500 hover:text-gray-700'
@@ -146,8 +147,9 @@ function App() {
                 setSvgCode(generateSVG(elements));
                 setActiveTab('code');
               }}
+              title="Source Code"
             >
-              Source Code
+              <Code className="w-4 h-4" />
             </button>
           </div>
 
